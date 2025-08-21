@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
-
+import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -23,5 +23,6 @@ def dashboard():
     filtered_df = df[df['login_email'].str.lower() == email.lower()]
     return render_template('dashboard.html', tables=filtered_df.to_dict(orient='records'), headers=filtered_df.columns)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
