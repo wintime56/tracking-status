@@ -4,8 +4,11 @@ import pandas as pd
 import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+@app.route('/')
+def home():
+    return "✅ 系统已成功部署！请访问 /login 登录"
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email'].strip()
