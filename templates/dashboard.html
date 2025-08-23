@@ -34,8 +34,13 @@
             background-color: var(--btn-hover);
         }
 
-        th { resize: horizontal; overflow: auto; min-width: 80px; }
-        td { resize: vertical; overflow: auto; }
+        th, td {
+            resize: both;
+            overflow: auto;
+            min-width: 80px;
+            min-height: 30px;
+        }
+
         mark { background-color: yellow; font-weight: bold; }
     </style>
 </head>
@@ -53,6 +58,10 @@
         </div>
     </div>
 
+    <!-- 列选择器 -->
+    <div id="columnToggles" class="mb-3"></div>
+
+    <!-- 搜索框 -->
     <input type="text" id="searchInput" class="form-control mb-3" placeholder="输入关键词搜索...">
 
     <div class="table-responsive">
@@ -60,7 +69,7 @@
             <thead>
                 <tr>
                     {% for header in headers %}
-                        <th>{{ header }}</th>
+                        <th data-col="{{ loop.index0 }}">{{ header }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -133,7 +142,7 @@
                 document.documentElement.style.setProperty("--btn-color", "#6f42c1");
                 document.documentElement.style.setProperty("--btn-hover", "#5a32a3");
             }
-            localStorage.setItem("theme", theme); // 保存选择
+            localStorage.setItem("theme", theme);
             document.getElementById("themeSelect").value = theme;
         }
 
@@ -141,11 +150,73 @@
             applyTheme(this.value);
         });
 
-        // 页面加载时应用保存的主题
+        // 保存列宽 & 行高
+        function saveTableSizes() {
+            let sizes = { cols: {}, rows: {} };
+            document.querySelectorAll("#dataTable thead th").forEach((th, i) => {
+                sizes.cols[i] = th.offsetWidth;
+            });
+            document.querySelectorAll("#dataTable tbody tr").forEach((tr, r) => {
+                sizes.rows[r] = tr.offsetHeight;
+            });
+            localStorage.setItem("tableSizes", JSON.stringify(sizes));
+        }
+
+        function applyTableSizes() {
+            let saved = localStorage.getItem("tableSizes");
+            if (saved) {
+                let sizes = JSON.parse(saved);
+                document.querySelectorAll("#dataTable thead th").forEach((th, i) => {
+                    if (sizes.cols[i]) th.style.width = sizes.cols[i] + "px";
+                });
+                document.querySelectorAll("#dataTable tbody tr").forEach((tr, r) => {
+                    if (sizes.rows[r]) tr.style.height = sizes.rows[r] + "px";
+                });
+            }
+        }
+
+        document.addEventListener("mouseup", saveTableSizes);
+
+        // 列可见性控制
+        function buildColumnToggles() {
+            let headers = document.querySelectorAll("#dataTable thead th");
+            let savedCols = JSON.parse(localStorage.getItem("visibleCols") || "null");
+            if (!savedCols) {
+                savedCols = Array.from(headers).map((_, i) => true); // 默认全显示
+            }
+
+            headers.forEach((th, index) => {
+                let colName = th.innerText;
+                let checked = savedCols[index] ? "checked" : "";
+                $("#columnToggles").append(`
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="col_${index}" ${checked}>
+                        <label class="form-check-label" for="col_${index}">${colName}</label>
+                    </div>
+                `);
+
+                // 初始应用隐藏状态
+                if (!savedCols[index]) {
+                    table.column(index).visible(false);
+                }
+
+                // 绑定事件
+                $(`#col_${index}`).on("change", function() {
+                    table.column(index).visible(this.checked);
+                    savedCols[index] = this.checked;
+                    localStorage.setItem("visibleCols", JSON.stringify(savedCols));
+                });
+            });
+        }
+
+        // 页面加载时应用主题 & 表格尺寸 & 列可见性
         window.onload = function() {
             let savedTheme = localStorage.getItem("theme") || "blue";
             applyTheme(savedTheme);
+            applyTableSizes();
+            buildColumnToggles();
         };
     </script>
 </body>
 </html>
+
