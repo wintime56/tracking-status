@@ -34,28 +34,15 @@
             background-color: var(--btn-hover);
         }
 
-        /* 拖拽调整列宽 */
-        th {
-            resize: horizontal;
-            overflow: auto;
-            min-width: 80px;
-        }
-        td {
-            resize: vertical;
-            overflow: auto;
-        }
-
-        mark {
-            background-color: yellow;
-            font-weight: bold;
-        }
+        th { resize: horizontal; overflow: auto; min-width: 80px; }
+        td { resize: vertical; overflow: auto; }
+        mark { background-color: yellow; font-weight: bold; }
     </style>
 </head>
 <body class="container-fluid p-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>📊 客户数据面板</h2>
-        <!-- 主题切换 -->
         <div>
             <label for="themeSelect" class="me-2">切换主题：</label>
             <select id="themeSelect" class="form-select d-inline-block w-auto">
@@ -66,10 +53,8 @@
         </div>
     </div>
 
-    <!-- 搜索框 -->
     <input type="text" id="searchInput" class="form-control mb-3" placeholder="输入关键词搜索...">
 
-    <!-- 表格 -->
     <div class="table-responsive">
         <table id="dataTable" class="table table-striped table-bordered table-hover">
             <thead>
@@ -133,9 +118,8 @@
             });
         });
 
-        // 主题切换
-        document.getElementById("themeSelect").addEventListener("change", function() {
-            let theme = this.value;
+        // 主题切换 + 记忆
+        function applyTheme(theme) {
             if (theme === "blue") {
                 document.documentElement.style.setProperty("--main-color", "#1e3d59");
                 document.documentElement.style.setProperty("--btn-color", "#1e3d59");
@@ -149,7 +133,19 @@
                 document.documentElement.style.setProperty("--btn-color", "#6f42c1");
                 document.documentElement.style.setProperty("--btn-hover", "#5a32a3");
             }
+            localStorage.setItem("theme", theme); // 保存选择
+            document.getElementById("themeSelect").value = theme;
+        }
+
+        document.getElementById("themeSelect").addEventListener("change", function() {
+            applyTheme(this.value);
         });
+
+        // 页面加载时应用保存的主题
+        window.onload = function() {
+            let savedTheme = localStorage.getItem("theme") || "blue";
+            applyTheme(savedTheme);
+        };
     </script>
 </body>
 </html>
