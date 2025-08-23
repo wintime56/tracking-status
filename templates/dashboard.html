@@ -3,88 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <title>客户数据面板</title>
-    <!-- Bootstrap 样式 -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- DataTables 样式 -->
+    <!-- DataTables -->
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+
     <style>
-        body {
-            background-color: #f8f9fa;
+        :root {
+            --main-color: #1e3d59; /* 默认深蓝 */
+            --btn-color: #6f42c1;  /* 默认紫色 */
+            --btn-hover: #5a32a3;
         }
-        .container {
-            margin-top: 40px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-weight: bold;
-            text-align: center;
-        }
-        /* 修改表头背景色（你可以在这里调颜色） */
+
+        body { background-color: #f8f9fa; }
+        h2 { color: var(--main-color); }
+
         table.dataTable thead th {
-            background-color: #1e3d59;  /* 深蓝色 */
-            /* background-color: #343a40;  深灰色, 如果想换的话，注释上面这行，打开这一行 */
+            background-color: var(--main-color);
             color: white;
             text-align: center;
         }
+
+        .btn-theme {
+            background-color: var(--btn-color);
+            color: white;
+            border: none;
+        }
+        .btn-theme:hover {
+            background-color: var(--btn-hover);
+        }
+
+        /* 拖拽调整列宽 */
+        th {
+            resize: horizontal;
+            overflow: auto;
+            min-width: 80px;
+        }
+        td {
+            resize: vertical;
+            overflow: auto;
+        }
+
+        mark {
+            background-color: yellow;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body>
-<div class="container">
-    <h2>📊 客户数据面板</h2>
+<body class="container-fluid p-4">
 
-    <table id="dataTable" class="table table-striped table-bordered table-hover" style="width:100%">
-        <thead>
-        <tr>
-            {% for header in headers %}
-                <th>{{ header }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in tables %}
-            <tr>
-                {% for cell in row.values() %}
-                    <td>{{ cell }}</td>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📊 客户数据面板</h2>
+        <!-- 主题切换 -->
+        <div>
+            <label for="themeSelect" class="me-2">切换主题：</label>
+            <select id="themeSelect" class="form-select d-inline-block w-auto">
+                <option value="blue">深蓝</option>
+                <option value="gray">深灰</option>
+                <option value="purple">紫色</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="输入关键词搜索...">
+
+    <!-- 表格 -->
+    <div class="table-responsive">
+        <table id="dataTable" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in tables %}
+                <tr>
+                    {% for cell in row.values() %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 
-<!-- JS 引入 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        $('#dataTable').DataTable({
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            lengthChange: true,
-            pageLength: 10,
-            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/zh-CN.json" },
+    <script>
+        // 初始化 DataTable
+        let table = new DataTable('#dataTable', {
             dom: 'Bfrtip',
-            buttons: [
-                { extend: 'excel', text: '导出 Excel' },
-                { extend: 'csv', text: '导出 CSV' },
-                { extend: 'pdf', text: '导出 PDF' },
-                { extend: 'print', text: '打印' }
-            ]
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/zh-CN.json" }
         });
-    });
-</script>
+
+        // 搜索 + 高亮
+        document.getElementById("searchInput").addEventListener("keyup", function() {
+            let input = this.value.toLowerCase();
+            $("#dataTable tbody tr").each(function() {
+                let rowText = $(this).text().toLowerCase();
+                if (rowText.includes(input)) {
+                    $(this).show();
+                    $(this).find("td").each(function() {
+                        let cellText = $(this).text();
+                        if (input && cellText.toLowerCase().includes(input)) {
+                            $(this).html(cellText.replace(new RegExp(input, "gi"), match => `<mark>${match}</mark>`));
+                        } else {
+                            $(this).html(cellText);
+                        }
+                    });
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // 主题切换
+        document.getElementById("themeSelect").addEventListener("change", function() {
+            let theme = this.value;
+            if (theme === "blue") {
+                document.documentElement.style.setProperty("--main-color", "#1e3d59");
+                document.documentElement.style.setProperty("--btn-color", "#1e3d59");
+                document.documentElement.style.setProperty("--btn-hover", "#162c42");
+            } else if (theme === "gray") {
+                document.documentElement.style.setProperty("--main-color", "#343a40");
+                document.documentElement.style.setProperty("--btn-color", "#343a40");
+                document.documentElement.style.setProperty("--btn-hover", "#1d2124");
+            } else if (theme === "purple") {
+                document.documentElement.style.setProperty("--main-color", "#6f42c1");
+                document.documentElement.style.setProperty("--btn-color", "#6f42c1");
+                document.documentElement.style.setProperty("--btn-hover", "#5a32a3");
+            }
+        });
+    </script>
 </body>
 </html>
