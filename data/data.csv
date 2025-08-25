@@ -1,6 +1,14 @@
-
-login_email,序列号,主单号,柜号,ETA ,查验内容（代码）,进口商,码头,查验还是正常放行,海关放行时间,MET写DO时间ATCET 写海关自提,检查站名称,目的地,查验类型,8月21日,8月20日,8月16日,8月15日,8月14日,8月13日,8月12日,8月11日,8月8日,8月7日,8月6日,8月5日
-opfba18@163.com,QG#604, SMLMNJED5K820300,SMCU1213700,8-10-2025,7H,2821 Welton Street Investment,PierA,,未放行,,,,7H,,未照光,,还没有LFD， 客户还没有付款，他们自己付,还没有LFD， 客户还没有付款，他们自己付,还没有LFD， 客户还没有付款，他们自己付,还没有LFD， 客户还没有付款，他们自己付,还没有LFD,,,,
-opfba18@163.com,QG#658,EGLV142502075859,EGHU8296000,8-12-2025,2H,HONGSHIFAN, APMT,,未放行,8月14日,PRICE,LAX,2H,,未照光,,DO 已发客户--RECD 3461/PT，还没有LFD,DO 已发客户--RECD 3461/PT，还没有LFD,"已有1x,等出号，8/13,3:00到",,,,,,
-opfba18@163.com,QG#666,HDUJGLX25PH00022,XYLU8250384 ,8-13-2025,1H,T T ELECTRONIC,WBCT,,未放行,海关自提,CCC,LAX,1H,,未照光,,NOTIFICATION REC'D，今天已出1x，关注周一出号，是海关自提，CCC检查站,,,,,,,,
-
+序列号,主单号,柜号,ETA（要准确）,查验类型(同AD列）,查验内容（代码）,可知和本身存在查验内容,第一次放行时间,系统显示查验的时间(东部时间-驳回时间）,发货人,收货人,通知人,货代,进口商,进口商类别,放行后是否有被扣货及原因,进入检查站时间,ingate日期,检查费用,掏箱内容,车队,码头,检查站出tracker number（Linda+曼宁）,海关放行时间,是否查验即放行,MET和农业部写给DO时间/ ATCET （E-MET）写海关自提,检查站名称,目的地,查验类型,报关行,8月25日,8月23日,8月22日,8月21日,8月20日,8月19日,8月18日,2025/8/16-17,8月15日,8月14日,8月13日,8月12日,8月11日
+QG#658,EGLV142502075859,EGHU8296000,8月12日,,2H,,放行前查验,8月11日,HONGSHIFAN,AMAZON,SAME,BTL INTERNATIONAL INC.,HONGSHIFAN,,,/,/,,,Wisdom express inc. wexy, APMT,2025/8/14 6:54:00,未放行,,8月14日,PRICE,LAX,2H,JC,给检查站发了催促邮件，等回复--ON FLOOR FOR CBP第七天 MET还是EXAM IN PROGRESS ON FLOOR,ON FLOOR FOR CBP第五天 MET  ,ON FLOOR FOR CBP第四天  ,ON FLOOR FOR CBP第三天,新增MET - TRADE ENFORCEMENT，ON FLOOR FOR CBP,新增MET - TRADE ENFORCEMENT，ON FLOOR FOR CBP，DEVANNING，农业部放行," RECD 3461/PT, LFD 8-20, 客户预约8-18晚上提"," RECD 3461/PT, LFD 8-20, 客户预约8-18晚上提",DO 已发客户--RECD 3461/PT，还没有LFD,DO 已发客户--RECD 3461/PT，还没有LFD,"已有1x,等出号，8/13,3:00到",,
+QG#666,HDUJGLX25PH00022,XYLU8250384 ,8月13日,,1H,,8月14日,8月15日,"GUANGXI JITENG TRADING CO, LTD",T T ELECTRONIC,SAME,E LINK US INC,T T ELECTRONIC,,,/,/,,,"Kimroute Forward Inc
+SCAC CODE: KFIN ",WBCT,2025/8/15 14:40:00,未放行,,海关自提,CCC,LAX,1H,JC,CONTAINER UNLOADING ，CONTAINER AT DOCK第三天,CONTAINER AT DOCK,CONTAINER IN YARD 第三天,CONTAINER IN YARD 第二天,CONTAINER IN YARD,检查站回复，Container is on tomorrow's pickup schedule-已经给检查站发了邮件，提醒他们明天LFD --NOTIFICATION REC'D，LFD8/20,NOTIFICATION REC'D，还没有LFD,NOTIFICATION REC'D，今天已出1x，关注周一出号，是海关自提，CCC检查站，还没有LFD,NOTIFICATION REC'D，今天已出1x，关注周一出号，是海关自提，CCC检查站,,,,
+QG#722,MATS6574979000,MATU2743248 ,8月17日,,2H,,放行前查验,8月15日,CHANGLIANGE,JOSHELIYN,SAME,HECNY TRANSPORTATION INC,JOSHELIYN,,,,,,,"卡车信息
+Sea Hawks Express Logistics Inc 
+scac: SHKH ", PierA（美森在eModal查）,2025/8/20 8:23,未放行,,8月20日,PRICE,LAX,2H,JC,RELEASED/WAIT RELOAD，DEVANNING,INGATE第二天,in gate/RECD 3461/PT 昨天给美森发了邮件 他们给了LFD延期LFD8/22,RECD 3461/PT，LFD8/21,RECD 3461/PT，LFD8/21,已出1x. 明天等出号，客户自提,今天卸货,,,,,,
+QG#724,ZIMUNGB20657301,JXLU6698840,8月20日,,1H,,放行前查验,8月12日,BAOHONGCHENG,T T ELECTRONIC,SAME,浙江海迅国际物流有限公司,T T ELECTRONIC,,,,,,," Shoreline transportation
+SHPP", TraPc,2025/8/22 8:58:00,未放行,,8月22日,PRICE,LAX,1H,DN,RECD 3461/PT第四天 LFD08/23 微信问了客人什么时候提,RECD 3461/PT第二天 LFD08/23， DO 已发客户,RECD 3461/PT lfd 8/23,今天已出1x， 明天等出号，LFD8/23,,,,,,,,,
+QG#702,HDUJGLX25PH00036,CAAU4767920 ,8月20日,,1H+4A,,8月21日,8月21日,Chuangyi ,AMAZON,SAME,"Yiwu Jihangda Supply Chain Management Co., Ltd",Chuangyi ,,,,,,,"SCLF
+SC EXPRESS LOGISTICS", WBCT, 08/22/2025 09:01,未放行,,8月22日,PRICE,LAX,1H+4A,JC,INGATE，RECD 3461/PT第四天 LFD8/27， DO 已发客户,RECD 3461/PT第二天 LFD8/27， DO 已发客户,RECD 3461/PT LFD8/27， DO 已发客户,已卸船 LFD8/27，今天出1x了，等出号,,,,,,,,,
+ QG#710 ,HDUJGLX25LD00145,CAAU4769712 ,8月20日,,1H+7H,,8月21日,8月21日,Jiteng,T T ELECTRONIC,SAME,"ForandonbehalfofDLXINTERNATIONALLOGISTICS
+CO.,LTD",T T ELECTRONIC,,,,,x-ray ：425,," Kimroute Forward Inc
+SCAC CODE: KFIN", WBCT, 08/22/2025 08:34 AM,未放行,,海关自提,PRICE,LAX,1H+7H,JC,"RECD 3461/PT第四天 LFD8/27,x-ray已完成，费用已付","RECD 3461/PT第二天 LFD8/27,x-ray已完成，费用已付","RECD 3461/PT LFD8/27,x-ray已完成，费用已付",已卸船 LFD8/27，等照光后出1x,,,,,,,,,
