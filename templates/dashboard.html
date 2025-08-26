@@ -1,147 +1,115 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</title>
+  <meta charset="UTF-8">
+  <title>{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</title>
 
-    <!-- Bootstrap & DataTables CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        .header-bar {
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-        }
-        .header-bar img {
-            height: 40px;
-            margin-right: 12px;
-        }
-        .header-bar h3 {
-            margin: 0;
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
-        .dataTables_wrapper .dt-buttons {
-            float: right;
-            margin-bottom: 10px;
-        }
-        .form-control, .btn {
-            font-size: 0.9rem;
-        }
-        .table th, .table td {
-            white-space: nowrap;
-        }
-    </style>
+  <!-- Bootstrap 样式 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- DataTables 样式 -->
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      padding: 20px;
+    }
+    .table thead th {
+      background-color: #f0f2f5;
+      vertical-align: middle;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 40px;
+      margin-right: 10px;
+    }
+    .dt-buttons {
+      margin-bottom: 10px;
+    }
+    .dataTables_length {
+      float: left;
+    }
+    .dataTables_filter {
+      float: right;
+    }
+    .custom-control {
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
-<div class="container-fluid mt-3">
-    <div class="header-bar">
-        <img src="/static/wintime_logo.png" alt="Wintime Logo">
-        <h3>{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</h3>
-    </div>
+  <div class="header">
+    <img src="{{ url_for('static', filename='wintime_logo.png') }}" alt="Wintime Logo">
+    <h4 class="mb-0 text-dark">{{ session['email']|upper }} 的查验清关进度表（Wintime 清关系统）</h4>
+  </div>
 
-    <div class="row mb-2">
-        <div class="col-md-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="关键词搜索...">
-        </div>
-        <div class="col-md-3">
-            <input type="text" id="dateRange" class="form-control" placeholder="选择 ETA 日期范围">
-        </div>
-        <div class="col-md-3">
-            <select id="themeSelector" class="form-select">
-                <option value="table-primary">蓝色</option>
-                <option value="table-secondary">灰色</option>
-                <option value="table-success">绿色</option>
-                <option value="table-warning">黄色</option>
-                <option value="table-info">紫色</option>
-            </select>
-        </div>
-    </div>
+  <div class="mb-2">
+    <label for="etaRange" class="form-label">选择ETA日期范围：</label>
+    <input type="text" id="etaRange" class="form-control" placeholder="请选择日期范围...">
+  </div>
 
-    <div class="table-responsive">
-        <table id="dataTable" class="table table-bordered table-striped table-hover table-primary">
-            <thead>
-                <tr>
-                    {% for header in headers %}
-                    <th>{{ header }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in tables %}
-                <tr>
-                    {% for cell in row.values() %}
-                    <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+  <table id="dataTable" class="table table-bordered table-hover table-striped w-100">
+    <thead class="table-light">
+      <tr>
+        {% for header in headers %}
+          <th>{{ header }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in tables %}
+        <tr>
+          {% for cell in row.values() %}
+            <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-<!-- JS 插件 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
+  <!-- Bootstrap + DataTables 脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+  <!-- Buttons 导出功能 -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+  <!-- 日期选择器 flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+
+  <script>
     $(document).ready(function () {
-        const table = $('#dataTable').DataTable({
-            responsive: true,
-            dom: 'Bfrtip',
-            buttons: ['excel', 'pdf', 'colvis'],
-            pageLength: 10,
-            lengthMenu: [10, 20, 30, 40]
-        });
+      const table = $('#dataTable').DataTable({
+        dom: '<"row mb-3"<"col-sm-4"l><"col-sm-4 text-center"B><"col-sm-4"f>>rtip',
+        buttons: ['excel', 'pdf', 'print'],
+        pageLength: 10,
+        lengthMenu: [10, 20, 30, 40],
+        autoWidth: false,
+        scrollX: true,
+        columnDefs: [
+          { targets: '_all', className: 'align-middle' }
+        ]
+      });
 
-        $('#searchInput').on('keyup', function () {
-            table.search(this.value).draw();
-        });
-
-        flatpickr("#dateRange", {
-            mode: "range",
-            dateFormat: "Y-m-d",
-            onClose: function(selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    const start = selectedDates[0];
-                    const end = selectedDates[1];
-                    table.draw();
-                    $.fn.dataTable.ext.search.push(
-                        function(settings, data, dataIndex) {
-                            const eta = new Date(data[4]);
-                            return eta >= start && eta <= end;
-                        }
-                    );
-                } else {
-                    $.fn.dataTable.ext.search.pop();
-                    table.draw();
-                }
-            }
-        });
-
-        $('#themeSelector').on('change', function () {
-            const theme = $(this).val();
-            const tableEl = $('#dataTable');
-            tableEl.removeClass('table-primary table-secondary table-success table-warning table-info')
-                   .addClass(theme);
-        });
+      flatpickr("#etaRange", {
+        mode: "range",
+        dateFormat: "Y-m-d"
+      });
     });
-</script>
+  </script>
 </body>
 </html>
