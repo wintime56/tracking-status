@@ -2,130 +2,138 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>OPFBA18@163.COM 的查验清关进度表（Wintime 清关系统）</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <title>{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- 样式依赖 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+
   <style>
-    body {
-      padding: 20px;
-      font-family: "Microsoft YaHei", sans-serif;
-    }
-    .table-responsive {
-      overflow-x: auto;
-    }
-    th {
-      background-color: #003366 !important;
-      color: white !important;
-      vertical-align: middle !important;
-    }
-    .logo-title {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .logo-title img {
-      height: 40px;
-      margin-right: 10px;
-    }
-    .flatpickr-input {
-      width: 280px;
-    }
-    .dt-buttons {
-      float: right;
-      margin-left: 20px;
-    }
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-    .theme-select {
-      width: 200px;
-    }
+    body { padding: 20px; }
+    .header { display: flex; align-items: center; margin-bottom: 10px; }
+    .header img { height: 40px; margin-right: 10px; }
+    .dataTables_filter { float: left !important; text-align: left; }
+    .dataTables_length { margin-left: auto; }
+    table.dataTable thead th { white-space: nowrap; vertical-align: middle; }
+    .theme-select { width: 200px; }
+    .flatpickr-input { width: 180px; }
+    .row-toolbar { margin-bottom: 10px; }
+    #dataTable_wrapper .row:first-child { align-items: center; }
   </style>
 </head>
 <body>
-<div class="logo-title">
-  <img src="/static/wintime_logo.png" alt="Wintime Logo">
-  <h4 class="mb-0">OPFBA18@163.COM 的查验清关进度表（Wintime 清关系统）</h4>
-</div>
-
-<div class="toolbar">
-  <div>
-    <label for="dateRange">选择 ETA 日期范围：</label>
-    <input id="dateRange" class="form-control d-inline-block flatpickr-input" placeholder="点击选择日期" readonly>
+  <div class="header">
+    <img src="/static/wintime_logo.png" alt="Wintime Logo">
+    <h4 class="mb-0">{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</h4>
   </div>
-  <div>
-    <select id="colorTheme" class="form-select theme-select">
-      <option value="table-primary">深蓝</option>
-      <option value="table-secondary">深灰</option>
-      <option value="table-dark">深紫</option>
-      <option value="table-success">深绿</option>
-      <option value="table-warning">深黄</option>
-    </select>
-  </div>
-</div>
 
-<div class="table-responsive">
-  <table id="dataTable" class="table table-bordered table-hover table-striped w-100">
-    <thead class="align-middle">
-      <tr>
-        {% for header in headers %}
-          <th>{{ header }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in tables %}
+  <!-- 第一行：搜索栏 -->
+  <div class="row row-toolbar">
+    <div class="col-md-4">
+      <input type="search" class="form-control" placeholder="搜索关键词高亮匹配" id="searchBox">
+    </div>
+  </div>
+
+  <!-- 第二行：日期 + 每页数量 + 主题 -->
+  <div class="row row-toolbar">
+    <div class="col-md-2">
+      <input type="text" id="dateRange" class="form-control flatpickr-input" placeholder="选择ETA日期范围" readonly>
+    </div>
+    <div class="col-md-2">
+      <select id="entriesSelect" class="form-select">
+        <option value="10">每页 10 行</option>
+        <option value="20">每页 20 行</option>
+        <option value="30">每页 30 行</option>
+        <option value="40">每页 40 行</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select id="themeColor" class="form-select theme-select">
+        <option value="table-primary">蓝色（默认）</option>
+        <option value="table-danger">洋红色</option>
+        <option value="table-info">靛蓝色</option>
+        <option value="table-light">薰衣草色</option>
+        <option value="table-warning">珊瑚色</option>
+        <option value="table-success">绿松石色</option>
+        <option value="table-secondary">卡其色</option>
+        <option value="table-dark">灰褐色</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table id="dataTable" class="table table-bordered table-hover table-striped w-100 table-primary">
+      <thead>
         <tr>
-          {% for cell in row.values() %}
-            <td>{{ cell }}</td>
+          {% for header in headers %}
+            <th>{{ header }}</th>
           {% endfor %}
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        {% for row in tables %}
+          <tr>
+            {% for cell in row.values() %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/pdfmake.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/vfs_fonts.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <!-- 脚本引入 -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<script>
-  flatpickr("#dateRange", {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    locale: "zh"
-  });
+  <script>
+    $(document).ready(function () {
+      const table = $('#dataTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: ['excel', 'pdf', 'print'],
+        pageLength: 10,
+        lengthChange: false,
+        ordering: true,
+        scrollX: true
+      });
 
-  $(document).ready(function () {
-    const table = $('#dataTable').DataTable({
-      dom: 'lBfrtip',
-      buttons: ['excel', 'pdf', 'print'],
-      pageLength: 10,
-      lengthMenu: [[10, 20, 30, 40], [10, 20, 30, 40]],
-      responsive: true,
-      scrollX: true
+      // 搜索 + 高亮
+      $('#searchBox').on('keyup', function () {
+        table.search(this.value).draw();
+        $('#dataTable tbody tr').unmark();
+        $('#dataTable tbody').mark(this.value);
+      });
+
+      // 日期筛选器
+      flatpickr("#dateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d"
+      });
+
+      // 切换主题色
+      $('#themeColor').on('change', function () {
+        $('#dataTable')
+          .removeClass('table-primary table-danger table-info table-light table-warning table-success table-secondary table-dark')
+          .addClass(this.value);
+      });
+
+      // 更改每页行数
+      $('#entriesSelect').on('change', function () {
+        table.page.len($(this).val()).draw();
+      });
     });
-
-    $('#colorTheme').on('change', function () {
-      const theme = $(this).val();
-      $('#dataTable').removeClass().addClass(`table table-bordered table-hover table-striped ${theme}`);
-    });
-  });
-</script>
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
 </body>
 </html>
