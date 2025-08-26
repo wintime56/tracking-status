@@ -4,24 +4,25 @@
   <meta charset="UTF-8">
   <title>{{ session['email'] }} 的查验清关进度表（Wintime 清关系统）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <!-- 样式依赖 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/colvis/1.1.2/css/dataTables.colVis.css" rel="stylesheet">
 
   <style>
     body { padding: 20px; }
     .header { display: flex; align-items: center; margin-bottom: 10px; }
     .header img { height: 40px; margin-right: 10px; }
-    .dataTables_filter { float: left !important; text-align: left; }
-    .dataTables_length { margin-left: auto; }
     table.dataTable thead th { white-space: nowrap; vertical-align: middle; }
-    .theme-select { width: 200px; }
+    .theme-select { width: 180px; }
     .flatpickr-input { width: 180px; }
     .row-toolbar { margin-bottom: 10px; }
     #dataTable_wrapper .row:first-child { align-items: center; }
+    .dt-buttons { float: right; }
+    .dataTables_filter { display: none; }
   </style>
 </head>
 <body>
@@ -33,7 +34,7 @@
   <!-- 第一行：搜索栏 -->
   <div class="row row-toolbar">
     <div class="col-md-4">
-      <input type="search" class="form-control" placeholder="搜索关键词高亮匹配" id="searchBox">
+      <input type="search" class="form-control" placeholder="关键词高亮搜索" id="searchBox">
     </div>
   </div>
 
@@ -52,14 +53,13 @@
     </div>
     <div class="col-md-2">
       <select id="themeColor" class="form-select theme-select">
-        <option value="table-primary">蓝色（默认）</option>
-        <option value="table-danger">洋红色</option>
-        <option value="table-info">靛蓝色</option>
-        <option value="table-light">薰衣草色</option>
-        <option value="table-warning">珊瑚色</option>
-        <option value="table-success">绿松石色</option>
-        <option value="table-secondary">卡其色</option>
-        <option value="table-dark">灰褐色</option>
+        <option value="table-primary">深蓝（默认）</option>
+        <option value="table-danger">洋红</option>
+        <option value="table-light">薰衣草</option>
+        <option value="table-warning">珊瑚</option>
+        <option value="table-success">绿松石</option>
+        <option value="table-secondary">卡其</option>
+        <option value="table-dark">灰</option>
       </select>
     </div>
   </div>
@@ -85,55 +85,71 @@
     </table>
   </div>
 
-  <!-- 脚本引入 -->
+  <!-- JS 脚本 -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <script src="https://cdn.datatables.net/colvis/1.1.2/js/dataTables.colVis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
 
   <script>
     $(document).ready(function () {
       const table = $('#dataTable').DataTable({
         dom: 'Bfrtip',
-        buttons: ['excel', 'pdf', 'print'],
+        buttons: [
+          {
+            extend: 'excelHtml5',
+            title: '{{ session["email"] }}_shipment_status'
+          },
+          {
+            extend: 'pdfHtml5',
+            title: '{{ session["email"] }}_shipment_status'
+          },
+          {
+            extend: 'print',
+            title: '{{ session["email"] }}_shipment_status'
+          },
+          'colvis'
+        ],
         pageLength: 10,
-        lengthChange: false,
         ordering: true,
-        scrollX: true
+        scrollX: true,
+        language: {
+          url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANS.json'
+        }
       });
 
-      // 搜索 + 高亮
+      // 搜索高亮
       $('#searchBox').on('keyup', function () {
         table.search(this.value).draw();
-        $('#dataTable tbody tr').unmark();
-        $('#dataTable tbody').mark(this.value);
+        $('#dataTable tbody').unmark().mark(this.value);
       });
 
-      // 日期筛选器
+      // 主题切换
+      $('#themeColor').on('change', function () {
+        $('#dataTable')
+          .removeClass('table-primary table-danger table-light table-warning table-success table-secondary table-dark')
+          .addClass(this.value);
+      });
+
+      // 每页显示数量
+      $('#entriesSelect').on('change', function () {
+        table.page.len(this.value).draw();
+      });
+
+      // 日期选择器
       flatpickr("#dateRange", {
         mode: "range",
         dateFormat: "Y-m-d"
       });
-
-      // 切换主题色
-      $('#themeColor').on('change', function () {
-        $('#dataTable')
-          .removeClass('table-primary table-danger table-info table-light table-warning table-success table-secondary table-dark')
-          .addClass(this.value);
-      });
-
-      // 更改每页行数
-      $('#entriesSelect').on('change', function () {
-        table.page.len($(this).val()).draw();
-      });
     });
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
 </body>
 </html>
