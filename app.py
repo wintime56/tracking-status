@@ -5,47 +5,61 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# 假设我们手动写入一个简单的用户表（你可以后续连接数据库）
-users = {
-    'opfba18@163.com': '123456',
-    'test@example.com': 'password123'
-}
+# 自动识别 Railway 路径或本地路径
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, 'data', 'data.csv')
+USER_FILE = os.path.join(BASE_DIR, 'data', 'users.csv')
 
-@app.route('/')
-def home():
-    return redirect(url_for('login'))
 
+# 登录页（GET展示登录表单，POST提交验证）
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = ''
     if request.method == 'POST':
-        email = request.form.get('email').strip().lower()
-        password = request.form.get('password').strip()
+        email_input = request.form['email']
+        password_input = request.form['password']
+        
+        try:
+            users_df = pd.read_csv(USER_FILE)
+            user = users_df[(users_df['email'] == email_input) & (users_df['password'] == password_input)]
+        except Exception as e:
+            return f"读取用户信息失败：{e}"
 
-        # 登录验证
-        if email in users and users[email] == password:
-            session['email'] = email
+        if not user.empty:
+            session['email'] = email_input
             return redirect(url_for('dashboard'))
         else:
-            error = '邮箱或密码错误，请重试。'
+            return render_template('login.html', error='❌ 邮箱或密码错误，请重试')
 
-    return render_template('login.html', error=error)
+    return render_template('login.html')
 
-@app.route('/dashboard')
-def dashboard():
-    email = session.get('email')
-    if not email:
-        return redirect(url_for('login'))
 
-    df = pd.read_csv('data/data.csv', encoding='utf-8')
-    df.columns = df.columns.str.strip()
-    filtered_df = df[df['login_email'].str.lower() == email.lower()]
-    return render_template('dashboard.html', tables=filtered_df.to_dict(orient='records'), headers=filtered_df.columns)
-
+# 注销
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
+
+# 主查询面板
+@app.route('/', methods=['GET'])
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        df = pd.read_csv(DATA_FILE)
+    except Exception as e:
+        return f"读取清关数据失败：{e}"
+
+    email = session['email']
+    filtered_df = df[df['login_email'].str.lower() == email.lower()] if 'login_email' in df.columns else df
+
+    data = filtered_df.to_dict(orient='records')
+    columns = filtered_df.columns.tolist()
+    return render_template('dashboard.html', data=data, columns=columns, email=email)
+
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
